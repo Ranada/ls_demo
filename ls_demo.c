@@ -6,6 +6,11 @@ void check_arguments(char** argc, struct dirent *entry);
 
 int main(int argv, char** argc)
 {
+    // If no operands are given -> list all contents of current directory
+    // If one argument and is a directory -> display items inside
+    // If one argument and is a folder -> display name
+        //If option "-a" is given -> list directories whose name begins with "."
+        //If option "-t" is given -> sort by time modified (most recently modified first) before sorting the operands by lexicographical order
    
     DIR *folder;
     struct dirent *entry;
