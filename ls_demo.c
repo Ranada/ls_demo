@@ -1,102 +1,116 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
+#include <unistd.h>
 
-void list_all_files(DIR *folder, struct dirent *entry);
-void explore_directory(DIR *folder, struct dirent *entry, int argv, char** argc);
-void check_arguments(char** argc, struct dirent *entry);
+void list_all_files(const char* dir_name);
+void explore_directory(int argc, char** argv);
 
-int main(int argv, char** argc)
+int main(int argc, char** argv)
 {
     
     // If one argument and is a directory -> display items inside
     // If one argument and is a folder -> display name
         //If option "-a" is given -> list directories whose name begins with "."
         //If option "-t" is given -> sort by time modified (most recently modified first) before sorting the operands by lexicographical order
-   
+
+    // If no operands are given -> list all contents of current directory
+    if (argc == 1)
+    {
+        printf("Parent directory: %s\n", argv[0]);
+        list_all_files(".");
+    }
+
+    if (argc > 1)
+    {
+        explore_directory(argc, argv);
+    }
+
+    return(0);
+}
+
+void list_all_files(const char* dir_name)
+{
     DIR *folder;
     struct dirent *entry;
 
-    folder = opendir(".");
+    folder = opendir(dir_name);
     entry = readdir(folder);
 
     if (folder == NULL)
     {
         perror("Unable to read directory");
-        return(1);
+        return;
     }
-
-    // If no operands are given -> list all contents of current directory
-    if (argv == 1)
-    {
-        list_all_files(folder, entry);
-    }
-
-    if (argv > 1)
-    {
-        explore_directory(folder, entry, argv, argc);
-    }
-
-    // closedir(folder);
-
-    return(0);
-}
-
-void list_all_files(DIR *folder, struct dirent *entry)
-{
+    
     int file = 0;
-
     while (entry != NULL)
     {
         file++;
-        printf("File %d \t%hhu  %s\n", file, entry->d_type, entry->d_name);
+        printf("\tFile %d \t%hhu  %s\n", file, entry->d_type, entry->d_name);
         entry = readdir(folder);
     }
 
     closedir(folder);
 }
 
-void explore_directory(DIR *folder, struct dirent *entry, int argv, char** argc)
+void check_for_files(int argc, char** argv)
 {
-    int file = 0;
+    DIR *folder;
+    struct dirent *entry;
+
+    folder = opendir(".");
+    entry = readdir(folder);
+
+    while (entry != NULL)
+    {   
+        int index = 1;
+        while (index < argc)
+        {
+            if (entry->d_type == DT_REG && strcmp(entry->d_name, argv[index]) == 0 )
+            {
+            printf("File name: %s\n", entry->d_name);
+            break;
+            }
+            index++;
+        }
+        entry = readdir(folder); 
+    }
+    printf("\n");
+
+    closedir(folder);
+}
+
+void check_for_sub_directories(int argc, char** argv)
+{
+    DIR *folder;
+    struct dirent *entry;
+
+    folder = opendir(".");
+    entry = readdir(folder);
 
     while ((entry = readdir(folder)) != NULL)
     {
-        file++;
-        //printf("File %d \t%hhu  %s\n", file, entry->d_type, entry->d_name);
-       
-        int index = 1;
-        while (index < argv)
+        int j = 1;
+        
+        while (j < argc)
         {
-            if (strcmp(entry->d_name, argc[index]) == 0 && entry->d_type == 8)
+            if (entry->d_type == DT_DIR && strcmp(entry->d_name, argv[j]) == 0)
             {
-                //printf("ARGC: %s\n", argc[index]);
-                printf("File name: %s\n\n", entry->d_name);
+                printf("Sub-directory name: %s\n", entry->d_name);
+                list_all_files(entry->d_name);
+                printf("\n");
+                break;
             }
-            else if (strcmp(entry->d_name, argc[index]) == 0 && entry->d_type == 4)
-            {
-                printf("-------------------------------------\n");
-                printf("Directory name: %s\n", entry->d_name);
-
-                DIR *folder = opendir(entry->d_name);
-                struct dirent *entry = readdir(folder);
-
-                list_all_files(folder, entry);
-                printf("-------------------------------------\n");
-            }
-            
-            index++;
+            j++;
         }
     }
+
+    closedir(folder);
 }
 
-void check_arguments(char** argc, struct dirent *entry)
-{
-    // printf("Argc[1]: %s\n", argc[1]);         
-    // printf("File name: %s\n", entry->d_name);
-
-    if (strcmp(argc[1], entry->d_name) == 0)
-    {
-        printf("%s\n", entry->d_name);
-    }
+void explore_directory(int argc, char** argv)
+{   
+    check_for_files(argc, argv);
+    check_for_sub_directories(argc, argv);    
 }
