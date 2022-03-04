@@ -74,18 +74,18 @@ void check_for_sub_directories(int argc, char** argv)
 
     while ((entry = readdir(folder)) != NULL)
     {
-        int j = 1;
+        int index = 1;
         
-        while (j < argc)
+        while (index < argc)
         {
-            if (entry->d_type == DT_DIR && strcmp(entry->d_name, argv[j]) == 0)
+            if (entry->d_type == DT_DIR && strcmp(entry->d_name, argv[index]) == 0)
             {
                 printf("Sub-directory name: %s\n", entry->d_name);
                 list_files(entry->d_name);
                 printf("\n");
                 break;
             }
-            j++;
+            index++;
         }
     }
 
