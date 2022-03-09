@@ -6,6 +6,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 /* Function Prototypes */
 void list_files(const char* dir_name);

@@ -4,6 +4,7 @@ void list_files(const char* dir_name)
 {
     DIR *folder;
     struct dirent *entry;
+    struct stat filestat;
 
     folder = opendir(dir_name);
     entry = readdir(folder);
@@ -14,16 +15,26 @@ void list_files(const char* dir_name)
         return;
     }
     
-    int file = 0;
-    while (entry != NULL)
-    {
-        if (entry->d_name[0] != '.')
-        {
-            file++;
-            printf("\tFile %d \t%hhu  %s \t%c\n", file, entry->d_type, entry->d_name, entry->d_name[0]);
-        }
+    // int file = 0;
+    // while (entry != NULL)
+    // {
+    //     if (entry->d_name[0] != '.')
+    //     {
+    //         file++;
+    //         printf("\tFile %d \t%hhu  %s \t%c\n", file, entry->d_type, entry->d_name, entry->d_name[0]);
+    //     }
 
-        entry = readdir(folder);
+    //     entry = readdir(folder);
+    // }
+
+    /* Read directory entries */
+    while( (entry=readdir(folder)) )
+    {
+        stat(entry->d_name,&filestat);
+        if( S_ISDIR(filestat.st_mode) )
+            printf("%4s: %s\n","Dir",entry->d_name);
+        else
+            printf("%4s: %s\n","File",entry->d_name);
     }
 
     closedir(folder);
