@@ -5,39 +5,51 @@ void list_files(const char* dir_name)
     DIR *folder;
     struct dirent *entry;
     struct stat filestat;
+    char cwdpath[256];
+    int count = 0;
+    long long total = 0;
 
     folder = opendir(dir_name);
-    entry = readdir(folder);
+    // entry = readdir(folder);
 
     if (folder == NULL)
     {
         perror("Unable to read directory");
         return;
     }
+
+    /* State directory name */
+    getcwd(cwdpath,256);
+    printf(" Directory of %s\n\n",cwdpath);
     
-    // int file = 0;
-    // while (entry != NULL)
-    // {
-    //     if (entry->d_name[0] != '.')
-    //     {
-    //         file++;
-    //         printf("\tFile %d \t%hhu  %s \t%c\n", file, entry->d_type, entry->d_name, entry->d_name[0]);
-    //     }
-
-    //     entry = readdir(folder);
-    // }
-
-    /* Read directory entries */
+   /* Read directory entries */
     while( (entry=readdir(folder)) )
     {
+        count++;
+        
+        /* Extract Filename */
         stat(entry->d_name,&filestat);
+        printf("%-16s",entry->d_name);
+
+        /* Extract Size */
         if( S_ISDIR(filestat.st_mode) )
-            printf("%4s: %s\n","Dir",entry->d_name);
+            printf("%-8s  ","<DIR>");
         else
-            printf("%4s: %s\n","File",entry->d_name);
+        {
+            printf("%8lld  ",filestat.st_size);
+            total+=filestat.st_size;
+        }
+
+        /* Extract create date and time */
+        printf("%s",ctime(&filestat.st_mtime));
     }
 
     closedir(folder);
+
+      printf("\n        %d File(s) for %lld bytes\n",
+            count,
+            total
+          );
 }
 
 void explore_directory(int argc, char** argv)

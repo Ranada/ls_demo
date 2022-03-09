@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <time.h>
 
 /* Function Prototypes */
 void list_files(const char* dir_name);
