@@ -5,6 +5,8 @@ void list_all_files(const char* dir_name)
     DIR *folder;
     struct dirent *entry;
     struct stat filestat;
+    listnode* head = malloc(sizeof(listnode));
+    listnode* pointer;
 
     folder = opendir(dir_name);
 
@@ -23,20 +25,33 @@ void list_all_files(const char* dir_name)
         
         if (strncmp(entry->d_name, ".", 1) != 0)
         {
-            printf("%-16s",entry->d_name);
+            // printf("%-24s",entry->d_name);
 
-            /* Extract Type */
-            if( S_ISDIR(filestat.st_mode) )
-                printf("%-8s  ", "Directory");
+            // /* Extract Type */
+            // if( S_ISDIR(filestat.st_mode) )
+            //     printf("%-8s  ", "Directory");
+            // else
+            // {
+            //     printf("%-9s  ", "File");
+            // }
+
+            // /* Extract create date and time */
+            // printf("%s",ctime(&filestat.st_mtime));
+            if (head->val == NULL)
+            {
+                head->val = entry->d_name;
+                head->next = NULL;
+                pointer = head;
+            }
             else
             {
-                printf("%-9s  ", "File");
+                pointer = add_to_end(pointer, entry->d_name);
             }
-
-            /* Extract create date and time */
-            printf("%s",ctime(&filestat.st_mtime));
         }
     }
+
+    print_list_data(head);
+    printf("\n");
 
     closedir(folder);
 }
@@ -62,7 +77,7 @@ void list_all_files_with_hidden(const char* dir_name)
         /* Extract Filename */
         stat(entry->d_name,&filestat);
         
-        printf("%-16s",entry->d_name);
+        printf("%-24s",entry->d_name);
 
         /* Extract Type */
         if( S_ISDIR(filestat.st_mode) )
