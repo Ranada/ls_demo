@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": ["ls_demo.c", "subdir", "makefile", ".dot_subdir"],
+            "args": [],
             "stopAtEntry": true,
             "cwd": "${fileDirname}",
             "environment": [],

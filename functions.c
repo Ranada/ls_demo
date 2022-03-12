@@ -1,43 +1,75 @@
 #include "ls_demo.h"
 
-void list_files(const char* dir_name)
+void list_all_files(const char* dir_name)
 {
     DIR *folder;
     struct dirent *entry;
     struct stat filestat;
-    char cwdpath[256];
-    int count = 0;
-    long long total = 0;
 
     folder = opendir(dir_name);
-    // entry = readdir(folder);
 
     if (folder == NULL)
     {
         perror("Unable to read directory");
         return;
     }
-
-    /* State directory name */
-    getcwd(cwdpath,256);
-    printf(" Directory of %s\n\n",cwdpath);
     
    /* Read directory entries */
     while( (entry=readdir(folder)) )
     {
-        count++;
         
         /* Extract Filename */
         stat(entry->d_name,&filestat);
+        
+        if (strncmp(entry->d_name, ".", 1) != 0)
+        {
+            printf("%-16s",entry->d_name);
+
+            /* Extract Type */
+            if( S_ISDIR(filestat.st_mode) )
+                printf("%-8s  ", "Directory");
+            else
+            {
+                printf("%-9s  ", "File");
+            }
+
+            /* Extract create date and time */
+            printf("%s",ctime(&filestat.st_mtime));
+        }
+    }
+
+    closedir(folder);
+}
+
+void list_all_files_with_hidden(const char* dir_name)
+{
+    DIR *folder;
+    struct dirent *entry;
+    struct stat filestat;
+
+    folder = opendir(dir_name);
+
+    if (folder == NULL)
+    {
+        perror("Unable to read directory");
+        return;
+    }
+    
+   /* Read directory entries */
+    while( (entry=readdir(folder)) )
+    {
+        
+        /* Extract Filename */
+        stat(entry->d_name,&filestat);
+        
         printf("%-16s",entry->d_name);
 
-        /* Extract Size */
+        /* Extract Type */
         if( S_ISDIR(filestat.st_mode) )
-            printf("%-8s  ","<DIR>");
+            printf("%-8s  ", "Directory");
         else
         {
-            printf("%8lld  ",filestat.st_size);
-            total+=filestat.st_size;
+            printf("%-9s  ", "File");
         }
 
         /* Extract create date and time */
@@ -45,72 +77,67 @@ void list_files(const char* dir_name)
     }
 
     closedir(folder);
-
-      printf("\n        %d File(s) for %lld bytes\n",
-            count,
-            total
-          );
 }
 
-void explore_directory(int argc, char** argv)
-{   
-    check_for_files(argc, argv);
-    check_for_sub_directories(argc, argv);    
-}
+// void explore_directory(int argc, char** argv)
+// {   
+//     check_for_files(argc, argv);
+//     check_for_sub_directories(argc, argv);    
+// }
 
-// If one argument and is a folder -> display name
-void check_for_files(int argc, char** argv)
-{
-    DIR *folder;
-    struct dirent *entry;
+// // If one argument and is a folder -> display name
+// void check_for_files(int argc, char** argv)
+// {
+//     DIR *folder;
+//     struct dirent *entry;
 
-    folder = opendir(".");
-    entry = readdir(folder);
+//     folder = opendir(".");
+//     entry = readdir(folder);
 
-    while (entry != NULL)
-    {   
-        int index = 1;
-        while (index < argc)
-        {
-            if (entry->d_type == DT_REG && strcmp(entry->d_name, argv[index]) == 0 )
-            {
-            printf("File name: %s\n", entry->d_name);
-            break;
-            }
-            index++;
-        }
-        entry = readdir(folder); 
-    }
-    printf("\n");
+//     while (entry != NULL)
+//     {   
+//         int index = 1;
+//         while (index < argc)
+//         {
+//             if (entry->d_type == DT_REG && strcmp(entry->d_name, argv[index]) == 0 )
+//             {
+//             printf("File name: %s\n", entry->d_name);
+//             break;
+//             }
+//             index++;
+//         }
+//         entry = readdir(folder); 
+//     }
+//     printf("\n");
 
-    closedir(folder);
-}
+//     closedir(folder);
+// }
 
-// If one argument is a directory -> display items inside
-void check_for_sub_directories(int argc, char** argv)
-{
-    DIR *folder;
-    struct dirent *entry;
+// // If one argument is a directory -> display items inside
+// void check_for_sub_directories(int argc, char** argv)
+// {
+//     DIR *folder;
+//     struct dirent *entry;
 
-    folder = opendir(".");
-    entry = readdir(folder);
+//     folder = opendir(".");
+//     entry = readdir(folder);
 
-    while ((entry = readdir(folder)) != NULL)
-    {
-        int index = 1;
+//     while ((entry = readdir(folder)) != NULL)
+//     {
+//         int index = 1;
         
-        while (index < argc)
-        {
-            if (entry->d_type == DT_DIR && strcmp(entry->d_name, argv[index]) == 0)
-            {
-                printf("Sub-directory name: %s\n", entry->d_name);
-                list_files(entry->d_name);
-                printf("\n");
-                break;
-            }
-            index++;
-        }
-    }
+//         while (index < argc)
+//         {
+//             if (entry->d_type == DT_DIR && strcmp(entry->d_name, argv[index]) == 0)
+//             {
+//                 printf("Sub-directory name: %s\n", entry->d_name);
+//                 list_all_files(entry->d_name);
+//                 printf("\n");
+//                 break;
+//             }
+//             index++;
+//         }
+//     }
 
-    closedir(folder);
-}
+//     closedir(folder);
+// }

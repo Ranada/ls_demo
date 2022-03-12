@@ -8,14 +8,28 @@ int main(int argc, char** argv)
     // If no operands are given -> list all contents of current directory
     if (argc == 1)
     {
-        printf("Parent directory: %s\n", argv[0]);
-        list_files(".");
+        printf("\nPrinting all files and directories in %s\n", argv[0]);
+        list_all_files(".");
+        return 0;
     }
 
-    if (argc > 1)
+    if (argc == 2 && strcmp(argv[1], "-a") == 0)
     {
-        explore_directory(argc, argv);
+        printf("\nPrinting all files and directories (including hidden) in %s\n", argv[0]);
+        list_all_files_with_hidden(".");
+        return 0;
     }
 
-    return(0);
+    // if (argc == 2 && strcmp(argv[1], "-t") == 0)
+    // {
+    //     printf("\nSort all files and directories by most recently modified in %s\n", argv[0]);
+    //     list_files(".", "-t");
+    // }
+
+    // if (argc > 1)
+    // {
+    //     explore_directory(argc, argv);
+    // }
+
+    return 0;
 }

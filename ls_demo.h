@@ -10,9 +10,10 @@
 #include <time.h>
 
 /* Function Prototypes */
-void list_files(const char* dir_name);
-void explore_directory(int argc, char** argv);
-void check_for_files(int argc, char** argv);
-void check_for_sub_directories(int argc, char** argv);
+void list_all_files(const char* dir_name);
+void list_all_files_with_hidden(const char* dir_name);
+// void explore_directory(int argc, char** argv);
+// void check_for_files(int argc, char** argv);
+// void check_for_sub_directories(int argc, char** argv);
 
 #endif
