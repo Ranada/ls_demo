@@ -8,23 +8,27 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <errno.h>
 #include <stdlib.h>
 
 /* Struct */
 #ifndef STRUCT_LISTNODE
 #define STRUCT_LISTNODE
-typedef struct s_listnode
+struct s_listnode
 {
     const char* val;
     struct s_listnode* next;
-} listnode;
+};
+
+typedef struct s_listnode listnode;
 #endif
 
 /* Function Prototypes */
-void list_all_files(const char* dir_name);
+int explore_directory(int argc, char* argv[]);
+void list_files(const char* dir_name);
 void list_all_files_with_hidden(const char* dir_name);
 int sort_lexicographically(const char* file_name);
-listnode* add_to_end(listnode* pointer, const char* file_name);
+listnode* create_linked_list(listnode* pointer, const char* file_name);
 void print_list_data(listnode* head_address);
 listnode* merge_k_sorted_lists(listnode* result_head);
 // void explore_directory(int argc, char** argv);

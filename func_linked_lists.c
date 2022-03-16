@@ -1,8 +1,6 @@
 #include "ls_demo.h"
 
-
-
-listnode* add_to_end(listnode* pointer, const char* file_name)
+listnode* create_linked_list(listnode* pointer, const char* file_name)
 {
     listnode* temp_pointer = malloc(sizeof(listnode));
     temp_pointer->val = file_name;

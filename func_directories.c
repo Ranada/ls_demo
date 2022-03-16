@@ -1,12 +1,24 @@
 #include "ls_demo.h"
 
-void list_all_files(const char* dir_name)
+int explore_directory(int argc, char* argv[])
+{
+    if (argc == 1)
+    {
+        list_files(".");
+    }
+
+    int index = 1;
+    while (index < argc)
+    {
+        printf("%s\n", argv[index]);
+    }
+
+    return 0;
+}
+
+void list_files(const char* dir_name)
 {
     DIR *folder;
-    struct dirent *entry;
-    struct stat filestat;
-    listnode* head = malloc(sizeof(listnode));
-    listnode* pointer;
 
     folder = opendir(dir_name);
 
@@ -15,84 +27,90 @@ void list_all_files(const char* dir_name)
         perror("Unable to read directory");
         return;
     }
-    
-   /* Read directory entries */
-    while( (entry=readdir(folder)) )
+
+    struct dirent *entry = readdir(folder);
+    listnode* head = malloc(sizeof(listnode));
+    listnode* pointer = head;
+
+    while (entry != NULL)
     {
-        
-        /* Extract Filename */
-        stat(entry->d_name,&filestat);
-        
-        if (strncmp(entry->d_name, ".", 1) != 0)
+        if (pointer->val == NULL)
         {
-            // printf("%-24s",entry->d_name);
-
-            // /* Extract Type */
-            // if( S_ISDIR(filestat.st_mode) )
-            //     printf("%-8s  ", "Directory");
-            // else
-            // {
-            //     printf("%-9s  ", "File");
-            // }
-
-            // /* Extract create date and time */
-            // printf("%s",ctime(&filestat.st_mtime));
-            if (head->val == NULL)
-            {
-                head->val = entry->d_name;
-                head->next = NULL;
-                pointer = head;
-            }
-            else
-            {
-                pointer = add_to_end(pointer, entry->d_name);
-            }
+            pointer->val = entry->d_name;
+            pointer->next = NULL;
         }
+        else
+        {
+            pointer = create_linked_list(pointer, entry->d_name);
+        }
+
+        entry = readdir(folder);
     }
 
     print_list_data(head);
-    printf("\n");
+
+    free(head);
+    head = NULL;
 
     closedir(folder);
 }
 
-void list_all_files_with_hidden(const char* dir_name)
-{
-    DIR *folder;
-    struct dirent *entry;
-    struct stat filestat;
 
-    folder = opendir(dir_name);
+// void list_all_files(const char* dir_name)
+// {
+//     DIR *folder;
+//     struct dirent *entry;
+//     struct stat filestat;
+//     listnode* head = malloc(sizeof(listnode));
+//     listnode* pointer;
 
-    if (folder == NULL)
-    {
-        perror("Unable to read directory");
-        return;
-    }
+//     folder = opendir(dir_name);
+
+//     if (folder == NULL)
+//     {
+//         perror("Unable to read directory");
+//         return;
+//     }
     
-   /* Read directory entries */
-    while( (entry=readdir(folder)) )
-    {
+//    /* Read directory entries */
+//     while( (entry = readdir(folder)) )
+//     {
         
-        /* Extract Filename */
-        stat(entry->d_name,&filestat);
+//         /* Extract Filename */
+//         stat(entry->d_name,&filestat);
         
-        printf("%-24s",entry->d_name);
+//         if (strncmp(entry->d_name, ".", 1) != 0)
+//         {
+//             // printf("%-24s",entry->d_name);
 
-        /* Extract Type */
-        if( S_ISDIR(filestat.st_mode) )
-            printf("%-8s  ", "Directory");
-        else
-        {
-            printf("%-9s  ", "File");
-        }
+//             // /* Extract Type */
+//             // if( S_ISDIR(filestat.st_mode) )
+//             //     printf("%-8s  ", "Directory");
+//             // else
+//             // {
+//             //     printf("%-9s  ", "File");
+//             // }
 
-        /* Extract create date and time */
-        printf("%s",ctime(&filestat.st_mtime));
-    }
+//             // /* Extract create date and time */
+//             // printf("%s",ctime(&filestat.st_mtime));
+//             if (head->val == NULL)
+//             {
+//                 head->val = entry->d_name;
+//                 head->next = NULL;
+//                 pointer = head;
+//             }
+//             else
+//             {
+//                 pointer = add_to_end(pointer, entry->d_name);
+//             }
+//         }
+//     }
 
-    closedir(folder);
-}
+//     print_list_data(head);
+//     printf("\n");
+
+//     closedir(folder);
+// }
 
 // void explore_directory(int argc, char** argv)
 // {   
