@@ -28,22 +28,14 @@ void list_files(const char* dir_name)
         return;
     }
 
-    struct dirent *entry = readdir(folder);
+    struct dirent *entry = malloc(sizeof(struct dirent)); 
+    entry = readdir(folder);
     listnode* head = malloc(sizeof(listnode));
-    listnode* pointer = head;
+    // listnode* pointer = head;
 
     while (entry != NULL)
     {
-        if (pointer->val == NULL)
-        {
-            pointer->val = entry->d_name;
-            pointer->next = NULL;
-        }
-        else
-        {
-            pointer = create_linked_list(pointer, entry->d_name);
-        }
-
+        head = insert_node(head, entry);
         entry = readdir(folder);
     }
 
